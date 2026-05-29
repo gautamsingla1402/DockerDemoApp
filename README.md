@@ -1,35 +1,56 @@
 ﻿# DockerDemoApp – Advanced Docker Assignment
 
-# Project Overview
+## Project Overview
 
 DockerDemoApp is a containerized ASP.NET Core Web API application integrated with PostgreSQL using Docker and Docker Compose.
 
 This project demonstrates advanced Docker concepts including:
 
-- Dockerfile optimization
-- Multi-stage builds
-- Custom Docker networking
-- Persistent storage using Docker volumes
-- Bind mounts
-- Backup and restore of Docker volumes
-- Secret management
-- Vulnerability scanning
-- Docker security hardening
-- Docker Bench Security auditing
-- CI/CD pipeline integration
+* Dockerfile optimization
+* Multi-stage builds
+* Custom Docker networking
+* Persistent storage using Docker volumes
+* Bind mounts
+* Backup and restore of Docker volumes
+* Secret management
+* Vulnerability scanning
+* Docker security hardening
+* Docker Bench Security auditing
+* CI/CD pipeline integration
+* PostgreSQL database integration
+
+---
+
+# Quick Start
+
+```bash
+git clone https://github.com/gautamsingla1402/DockerDemoApp.git
+
+cd DockerDemoApp
+
+docker network create app-network
+
+docker compose up -d --build
+```
+
+Open:
+
+```text
+http://localhost:5000/swagger
+```
 
 ---
 
 # Technologies Used
 
-- ASP.NET Core 8
-- PostgreSQL 15
-- Docker
-- Docker Compose
-- Entity Framework Core
-- GitHub Actions
-- Trivy
-- Docker Bench Security
+* ASP.NET Core 8
+* PostgreSQL 15
+* Docker
+* Docker Compose
+* Entity Framework Core
+* GitHub Actions
+* Trivy
+* Docker Bench Security
 
 ---
 
@@ -44,6 +65,7 @@ This project demonstrates advanced Docker concepts including:
 │      - Non-root user                   │
 │      - Health checks                   │
 │      - Bind mount logs                 │
+│      - Resource limits                 │
 │                                        │
 │               ↕                        │
 │                                        │
@@ -59,31 +81,53 @@ This project demonstrates advanced Docker concepts including:
 # Features Implemented
 
 ## Dockerfile Optimization
-- Multi-stage builds
-- Smaller runtime image
-- Docker layer caching
-- Non-root user
+
+* Multi-stage builds
+* Smaller runtime image
+* Docker layer caching
+* Non-root user execution
 
 ## Networking
-- Custom Docker network
-- Container-to-container communication
-- Network inspection
+
+* Custom Docker network
+* Container-to-container communication
+* Network inspection
 
 ## Storage
-- Named Docker volumes
-- Bind mounts
-- Persistent PostgreSQL storage
+
+* Named Docker volumes
+* Bind mounts
+* Persistent PostgreSQL storage
 
 ## Security
-- Least privilege containers
-- Docker secrets
-- Vulnerability scanning using Trivy
-- Docker Bench Security audit
+
+* Non-root containers
+* Docker secrets
+* Vulnerability scanning using Trivy
+* Docker Bench Security audit
+* Least privilege principle
 
 ## Reliability
-- Restart policies
-- Health checks
-- Resource limits
+
+* Restart policies
+* Health checks
+* Resource limits
+
+---
+
+# Security Features
+
+Implemented the following security best practices:
+
+* Non-root container execution
+* Docker secrets
+* Least privilege principle
+* Docker Bench Security auditing
+* Trivy vulnerability scanning
+* Container health checks
+* Resource limits
+* Restart policies
+* No-new-privileges security option
 
 ---
 
@@ -99,11 +143,17 @@ DockerDemoApp/
 ├── logs/
 ├── screenshots/
 ├── secrets/
-├── .github/workflows/
+├── .github/
+│   └── workflows/
+│       └── docker-cicd.yml
+│
 ├── Dockerfile
 ├── docker-compose.yml
 ├── README.md
-└── Program.cs
+├── .env.example
+├── .gitignore
+├── Program.cs
+└── DockerDemoApp.csproj
 ```
 
 ---
@@ -112,10 +162,10 @@ DockerDemoApp/
 
 ## Prerequisites
 
-- Docker 20.10+
-- Docker Compose
-- Git
-- WSL (optional for Linux commands)
+* Docker 20.10+
+* Docker Compose
+* Git
+* WSL (optional)
 
 ---
 
@@ -123,6 +173,7 @@ DockerDemoApp/
 
 ```bash
 git clone https://github.com/gautamsingla1402/DockerDemoApp.git
+
 cd DockerDemoApp
 ```
 
@@ -136,7 +187,7 @@ docker network create app-network
 
 ---
 
-# Configure Secrets
+# Configure Docker Secrets
 
 Create:
 
@@ -245,6 +296,40 @@ bash -c "cd /volume && tar xzf /backup/postgres-backup.tar.gz"
 
 ---
 
+# Docker Hub Integration
+
+## Login
+
+```bash
+docker login
+```
+
+## Build Image
+
+```bash
+docker build -t <dockerhub-username>/dockerdemoapp:latest .
+```
+
+## Push Image
+
+```bash
+docker push <dockerhub-username>/dockerdemoapp:latest
+```
+
+## Pull Image
+
+```bash
+docker pull <dockerhub-username>/dockerdemoapp:latest
+```
+
+## Run Pulled Image
+
+```bash
+docker run -d -p 5000:8080 <dockerhub-username>/dockerdemoapp:latest
+```
+
+---
+
 # Vulnerability Scanning
 
 ## Trivy Scan
@@ -271,9 +356,12 @@ docker/docker-bench-security
 # CI/CD Pipeline
 
 GitHub Actions workflow included for:
-- Build automation
-- Docker image creation
-- Docker Hub push
+
+* Build automation
+* Application validation
+* Docker image creation
+* Docker Hub push
+* Continuous Integration
 
 Location:
 
@@ -283,22 +371,57 @@ Location:
 
 ---
 
+# Screenshots
+
+The screenshots folder contains evidence of:
+
+* Docker containers running
+* Swagger UI
+* Docker network inspection
+* Docker volume management
+* Backup creation
+* Trivy vulnerability scan
+* Docker Bench Security audit
+* GitHub Actions CI/CD execution
+
+---
+
+# Bonus Requirement
+
+Implemented PostgreSQL database integration using Entity Framework Core.
+
+Features:
+
+* PostgreSQL container
+* AppDbContext configuration
+* Database persistence using Docker volumes
+* Container-to-container communication
+* Database-backed API architecture
+
+---
+
 # Assignment Requirement Mapping
 
-| Requirement | Status |
-|---|---|
-| Optimize Dockerfile | Completed |
-| Multi-stage builds | Completed |
-| Custom Docker network | Completed |
-| Inspect/manage network | Completed |
-| Docker volumes | Completed |
-| Named volumes | Completed |
-| Bind mounts | Completed |
-| Backup/restore volumes | Completed |
-| Secret management | Completed |
-| Vulnerability scanning | Completed |
-| Least privilege | Completed |
-| Docker Bench Security | Completed |
+| Requirement                  | Status      |
+| ---------------------------- | ----------- |
+| Optimize Dockerfile          | ✅ Completed |
+| Multi-stage builds           | ✅ Completed |
+| Custom Docker network        | ✅ Completed |
+| Inspect/manage network       | ✅ Completed |
+| Docker volumes               | ✅ Completed |
+| Named volumes                | ✅ Completed |
+| Bind mounts                  | ✅ Completed |
+| Backup/restore volumes       | ✅ Completed |
+| Secret management            | ✅ Completed |
+| Vulnerability scanning       | ✅ Completed |
+| Least privilege              | ✅ Completed |
+| Docker Bench Security        | ✅ Completed |
+| Docker Hub Registry          | ✅ Completed |
+| Push Docker Images           | ✅ Completed |
+| Pull Docker Images           | ✅ Completed |
+| CI/CD Pipeline               | ✅ Completed |
+| Security Hardening           | ✅ Completed |
+| Database Integration (Bonus) | ✅ Completed |
 
 ---
 
@@ -306,16 +429,38 @@ Location:
 
 This project helped in understanding:
 
-- Docker containerization
-- Enterprise Docker practices
-- Multi-container architecture
-- Networking and persistence
-- Docker security
-- DevSecOps concepts
-- Production-ready container deployment
+* Docker containerization
+* Enterprise Docker practices
+* Multi-container architecture
+* Docker networking
+* Persistent storage
+* DevSecOps concepts
+* Container security
+* Vulnerability management
+* CI/CD integration
+* Production-ready container deployment
+
+---
+
+# Final Submission Checklist
+
+* [x] Dockerfile optimized
+* [x] Multi-stage builds implemented
+* [x] Custom Docker network configured
+* [x] Docker volumes configured
+* [x] Bind mounts configured
+* [x] Backup and restore completed
+* [x] Secret management implemented
+* [x] Vulnerability scanning completed
+* [x] Docker Bench Security executed
+* [x] CI/CD pipeline created
+* [x] Docker Hub integration completed
+* [x] PostgreSQL integration completed
+* [x] Documentation completed
 
 ---
 
 # Author
 
-Gautam Singla
+**Gautam Singla**
+Staff Engineer | .NET | Docker | Microservices | DevOps Enthusiast

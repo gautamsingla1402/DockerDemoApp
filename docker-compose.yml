@@ -1,18 +1,76 @@
-version: '3.8'
-
 services:
+
   web:
     build: .
+
+    container_name: web-app
+
     ports:
-      - "5000:80"
+      - "5000:8080"
+
     depends_on:
       - db
 
+    networks:
+      - app-network
+
+    read_only: false
+
+    security_opt:
+      - no-new-privileges:true
+
+    restart: unless-stopped
+
+    volumes:
+      - /mnt/c/Docker/logs:/app/logs
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
   db:
     image: postgres:15
+
+    container_name: postgres-db
+
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: demo
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+
     ports:
-      - "5433:5432"
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+    networks:
+      - app-network
+
+    secrets:
+      - db_password
+
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  postgres-data:
+
+networks:
+  app-network:
+    external: true
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt

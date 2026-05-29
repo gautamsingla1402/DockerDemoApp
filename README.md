@@ -1,318 +1,321 @@
-﻿# DockerDemoApp 🚀
+﻿# DockerDemoApp – Advanced Docker Assignment
 
-A simple ASP.NET Core Web API application containerized using Docker and Docker Compose with PostgreSQL database integration.
+# Project Overview
 
----
+DockerDemoApp is a containerized ASP.NET Core Web API application integrated with PostgreSQL using Docker and Docker Compose.
 
-# 📌 Project Overview
+This project demonstrates advanced Docker concepts including:
 
-This project demonstrates:
-
-- ASP.NET Core Web API development
-- Docker containerization
-- Docker Compose multi-container setup
-- PostgreSQL database integration using Entity Framework Core
-- Swagger API documentation
-- Docker image build and execution
-- Docker Hub integration
-
----
-
-# 🛠 Technologies Used
-
-| Technology | Purpose |
-|------------|---------|
-| ASP.NET Core 8 | Web API Framework |
-| Docker | Containerization |
-| Docker Compose | Multi-container orchestration |
-| PostgreSQL | Database |
-| Entity Framework Core | ORM |
-| Swagger | API documentation/testing |
+- Dockerfile optimization
+- Multi-stage builds
+- Custom Docker networking
+- Persistent storage using Docker volumes
+- Bind mounts
+- Backup and restore of Docker volumes
+- Secret management
+- Vulnerability scanning
+- Docker security hardening
+- Docker Bench Security auditing
+- CI/CD pipeline integration
 
 ---
 
-# 📂 Project Structure
+# Technologies Used
+
+- ASP.NET Core 8
+- PostgreSQL 15
+- Docker
+- Docker Compose
+- Entity Framework Core
+- GitHub Actions
+- Trivy
+- Docker Bench Security
+
+---
+
+# Project Architecture
+
+```text
+                    app-network
+┌────────────────────────────────────────┐
+│                                        │
+│   web-app (.NET API Container)         │
+│      - Multi-stage Docker build        │
+│      - Non-root user                   │
+│      - Health checks                   │
+│      - Bind mount logs                 │
+│                                        │
+│               ↕                        │
+│                                        │
+│   postgres-db (PostgreSQL Container)   │
+│      - Named volume persistence        │
+│      - Docker secrets                  │
+│                                        │
+└────────────────────────────────────────┘
+```
+
+---
+
+# Features Implemented
+
+## Dockerfile Optimization
+- Multi-stage builds
+- Smaller runtime image
+- Docker layer caching
+- Non-root user
+
+## Networking
+- Custom Docker network
+- Container-to-container communication
+- Network inspection
+
+## Storage
+- Named Docker volumes
+- Bind mounts
+- Persistent PostgreSQL storage
+
+## Security
+- Least privilege containers
+- Docker secrets
+- Vulnerability scanning using Trivy
+- Docker Bench Security audit
+
+## Reliability
+- Restart policies
+- Health checks
+- Resource limits
+
+---
+
+# Folder Structure
 
 ```text
 DockerDemoApp/
 │
 ├── Controllers/
-│   └── WeatherForecastController.cs
-│
 ├── Data/
-│   └── AppDbContext.cs
-│
 ├── Models/
-│   └── Item.cs
-│
+├── backups/
+├── logs/
+├── screenshots/
+├── secrets/
+├── .github/workflows/
 ├── Dockerfile
 ├── docker-compose.yml
-├── Program.cs
-├── appsettings.json
-├── DockerDemoApp.csproj
-└── README.md
+├── README.md
+└── Program.cs
 ```
 
 ---
 
-# ⚙️ Prerequisites
+# Setup Instructions
 
-Before running this project, install:
+## Prerequisites
 
-- Docker Desktop (20.10 or later)
+- Docker 20.10+
 - Docker Compose
-- .NET 8 SDK
-- Visual Studio 2022 / VS Code
+- Git
+- WSL (optional for Linux commands)
 
 ---
 
-# ✅ Step 1: Clone Repository
+# Clone Repository
 
 ```bash
-git clone <your-github-repo-url>
+git clone https://github.com/gautamsingla1402/DockerDemoApp.git
 cd DockerDemoApp
 ```
 
 ---
 
-# ✅ Step 2: Build Docker Image
+# Create Docker Network
 
 ```bash
-docker build -t dockerdemoapp .
+docker network create app-network
 ```
 
 ---
 
-# ✅ Step 3: Run Docker Container
+# Configure Secrets
 
-```bash
-docker run -d -p 5000:80 dockerdemoapp
+Create:
+
+```text
+secrets/db_password.txt
+```
+
+Add:
+
+```text
+StrongPassword123
 ```
 
 ---
 
-# 🌐 Access Swagger UI
+# Configure Environment Variables
 
-Open browser:
+Create:
 
-http://localhost:5000/swagger
+```text
+.env
+```
+
+Add:
+
+```env
+POSTGRES_USER=admin
+POSTGRES_DB=demo
+```
 
 ---
 
-# ✅ Docker Commands Used
+# Run Application
 
-## List Running Containers
+```bash
+docker compose up -d --build
+```
+
+---
+
+# Verify Running Containers
 
 ```bash
 docker ps
 ```
 
-## List All Containers
+---
 
-```bash
-docker ps -a
+# Access Swagger
+
+```text
+http://localhost:5000/swagger
 ```
 
-## Stop Container
+---
+
+# Docker Commands Used
+
+## View Containers
 
 ```bash
-docker stop <container_id>
-```
-
-## Start Container
-
-```bash
-docker start <container_id>
-```
-
-## Remove Container
-
-```bash
-docker rm <container_id>
+docker ps
 ```
 
 ## View Logs
 
 ```bash
-docker logs <container_id>
+docker logs web-app
 ```
 
-## Inspect Container
+## Inspect Network
 
 ```bash
-docker inspect <container_id>
+docker network inspect app-network
 ```
 
----
-
-# ✅ Docker Compose Setup
-
-## Run Multi-Container Application
+## View Volumes
 
 ```bash
-docker compose up -d
+docker volume ls
 ```
 
-## Stop Multi-Container Application
+---
+
+# Backup Docker Volume
 
 ```bash
-docker compose down
+docker run --rm \
+-v postgres-data:/volume \
+-v $(pwd):/backup \
+ubuntu \
+tar czf /backup/postgres-backup.tar.gz -C /volume .
 ```
 
 ---
 
-# 🐘 PostgreSQL Database Configuration
-
-Database service configured in `docker-compose.yml`:
-
-```yaml
-db:
-  image: postgres:15
-  environment:
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    POSTGRES_DB: demo
-```
-
----
-
-# 🧠 Entity Framework Core Packages
-
-Installed packages:
+# Restore Docker Volume
 
 ```bash
-dotnet add package Microsoft.EntityFrameworkCore
-dotnet add package Microsoft.EntityFrameworkCore.Tools
-dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+docker run --rm \
+-v postgres-data:/volume \
+-v $(pwd):/backup \
+ubuntu \
+bash -c "cd /volume && tar xzf /backup/postgres-backup.tar.gz"
 ```
 
 ---
 
-# 🔥 Database Connection String
+# Vulnerability Scanning
 
-Configured in `Program.cs`:
-
-```csharp
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql("Host=db;Port=5432;Database=demo;Username=admin;Password=password"));
-```
-
----
-
-# 🐳 Dockerfile
-
-```dockerfile
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
-COPY . .
-RUN dotnet publish -c Release -o out
-
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /app
-COPY --from=build /app/out .
-ENV ASPNETCORE_URLS=http://+:80
-ENTRYPOINT ["dotnet", "DockerDemoApp.dll"]
-```
-
----
-
-# 🧩 Docker Compose File
-
-```yaml
-services:
-  web:
-    build: .
-    ports:
-      - "5000:80"
-    depends_on:
-      - db
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: demo
-    ports:
-      - "5432:5432"
-```
-
----
-
-# 🚀 Docker Hub Commands
-
-## Login
+## Trivy Scan
 
 ```bash
-docker login
-```
-
-## Tag Image
-
-```bash
-docker tag dockerdemoapp <dockerhub-username>/dockerdemoapp
-```
-
-## Push Image
-
-```bash
-docker push <dockerhub-username>/dockerdemoapp
-```
-
-## Pull Image
-
-```bash
-docker pull <dockerhub-username>/dockerdemoapp
+trivy image web-app
 ```
 
 ---
 
-# 📖 API Endpoints
+# Docker Bench Security
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/weatherforecast` | Get weather forecast |
-| POST | `/api/weatherforecast/add` | Add item to database |
+```bash
+docker run --rm --net host --pid host --userns host --cap-add audit_control \
+-v /var/lib:/var/lib \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /usr/lib/systemd:/usr/lib/systemd \
+-v /etc:/etc \
+docker/docker-bench-security
+```
 
 ---
 
-#  Key Learnings
+# CI/CD Pipeline
 
-This project helped understand:
-
+GitHub Actions workflow included for:
+- Build automation
 - Docker image creation
-- Container lifecycle management
-- Port mapping
-- Multi-container orchestration
-- Database container integration
-- Entity Framework Core setup
-- Swagger API testing
+- Docker Hub push
+
+Location:
+
+```text
+.github/workflows/docker-cicd.yml
+```
 
 ---
 
-#  Assignment Requirements Covered
+# Assignment Requirement Mapping
 
 | Requirement | Status |
-|------------|--------|
-| Install Docker | ✅ |
-| Verify Installation | ✅ |
-| Create Web App | ✅ |
-| Dockerfile | ✅ |
-| Build Docker Image | ✅ |
-| Run Container | ✅ |
-| Docker Commands | ✅ |
-| Inspect & Logs | ✅ |
-| Docker Compose | ✅ |
-| Multi-Container App | ✅ |
-| Docker Registry | ✅ |
-| Push/Pull Images | ✅ |
-| README Documentation | ✅ |
-| Database Integration (Bonus) | ✅ |
+|---|---|
+| Optimize Dockerfile | Completed |
+| Multi-stage builds | Completed |
+| Custom Docker network | Completed |
+| Inspect/manage network | Completed |
+| Docker volumes | Completed |
+| Named volumes | Completed |
+| Bind mounts | Completed |
+| Backup/restore volumes | Completed |
+| Secret management | Completed |
+| Vulnerability scanning | Completed |
+| Least privilege | Completed |
+| Docker Bench Security | Completed |
 
 ---
 
-#  Author
+# Learning Outcomes
 
-**Gautam Singla**
+This project helped in understanding:
+
+- Docker containerization
+- Enterprise Docker practices
+- Multi-container architecture
+- Networking and persistence
+- Docker security
+- DevSecOps concepts
+- Production-ready container deployment
+
+---
+
+# Author
+
+Gautam Singla
